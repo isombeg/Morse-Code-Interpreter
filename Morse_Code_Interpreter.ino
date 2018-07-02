@@ -1,4 +1,4 @@
-const int ELEC_INPUT_PIN = 7;
+const int ELEC_INPUT_PIN = 7; //Digital pin 7 will be used to detect electrical input
 
 //Letters and corresponding morse code
 static bool A[ 2 ] = {false, true};
@@ -28,24 +28,24 @@ static bool X[ 4 ] = {true, false, false, true};
 static bool Y[ 4 ] = {true, false, true, true};
 static bool Z[ 4 ] = {true, true, false, false};
 
-bool dashDotDet(){
-  bool powerState = digitalRead(ELEC_INPUT_PIN);
-  if (powerState == HIGH){
+bool dashDotDet(){ //Function determining whether input is a dash or a dot
+  bool powerState = digitalRead(ELEC_INPUT_PIN); //Store whether button is being pushed or not in bool variable
+  if (powerState == HIGH){ //In the event that button is being pushed, execute following procedure
     delay(1000);
-    powerState = digitalRead(ELEC_INPUT_PIN);
+    powerState = digitalRead(ELEC_INPUT_PIN); //If after a second the button is still down, register a dash
     if (powerState == HIGH){
       return true;
     }
-    else if(powerState == LOW){
+    else if(powerState == LOW){ //If after a second the button isn't still down, register a dot
       return false;
     }
   }
-  else if(powerState == LOW){
+  else if(powerState == LOW){ //If the button was never pressed in the first place, recur
     dashDotDet();
   }
 }
 
-bool chngCharDet(){
+bool chngCharDet(){ //Function determining whether or not the user will being inputting code for a different character
   if (digitalRead(ELEC_INPUT_PIN) == LOW){
     delay(2000);
     if (digitalRead(ELEC_INPUT_PIN) == LOW){
@@ -55,24 +55,24 @@ bool chngCharDet(){
       return false;
     }
   }
+} //If the button remains unpressed for more than 2 seconds, the software established that the user will input Morse code for a new character
+
+bool linkDashDot(){ //Function that will link dashes and dots belonging to the Morse code for a certain character together
+  bool dashDotList[ 4 ];
+  bool chngState = false;
+  int index = -1;
+  while (chngState == false){
+    index += 1;
+    bool blip = dashDotDet();
+    dashDotList[index] = blip;
+    chngState = chngCharDet();
+  }
+  for (int entry = 0; entry < 4, entry++){
+    if (dashDotList[entry] == void){
+      
+    }
+  }
 }
-//
-//bool linkDashDot(){
-//  bool dashDotList[ 4 ];
-//  bool chngState = false;
-//  int index = -1;
-//  while (chngState == false){
-//    index += 1;
-//    bool blip = dashDotDet();
-//    dashDotList[index] = blip;
-//    chngState = chngCharDet();
-//  }
-//  for (int entry = 0; entry < 4, entry++){
-//    if (dashDotList[entry] == void){
-//      
-//    }
-//  }
-//}
 
 char charDet(){
   
