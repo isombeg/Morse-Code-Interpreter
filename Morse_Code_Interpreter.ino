@@ -55,23 +55,30 @@ bool chngCharDet(){ //Function determining whether or not the user will being in
       return false;
     }
   }
+  else{
+    return false;
+  }
 } //If the button remains unpressed for more than 2 seconds, the software established that the user will input Morse code for a new character
 
 bool linkDashDot(){ //Function that will link dashes and dots belonging to the Morse code for a certain character together
-  bool dashDotList[ 4 ];
-  bool chngState = false;
+  bool first; bool scnd; bool third; bool fourth;
+  bool fillList[ 5 ] = {first, scnd, third, fourth};
+  bool chngState = false; // Boolean var that will later be assigned store whether user intends to change characters or not
   int index = -1;
   while (chngState == false){
-    index += 1;
-    bool blip = dashDotDet();
-    dashDotList[index] = blip;
-    chngState = chngCharDet();
-  }
-  for (int entry = 0; entry < 4, entry++){
-    if (dashDotList[entry] == void){
-      
+    if (digitalRead(ELEC_INPUT_PIN) == LOW && index < 4){
+      index += 1;
+      bool blip = dashDotDet();
+      fillList[index] = blip;
+      chngState = chngCharDet();
     }
   }
+  bool dashDotList[ index ];
+  for (int entryNum = 0; entryNum < index; entryNum++){
+    dashDotList[entryNum] = fillList[entryNum];
+  }
+  
+  return dashDotList;
 }
 
 char charDet(){
@@ -87,14 +94,5 @@ void setup() {
 }
 
 void loop() {
-  bool a = dashDotDet();
-  if (a == true){
-    Serial.println("Dash");
-  }
-
-  else if (a == false){
-    Serial.println("Dot");
-  }
-  
-
+  linkDashDot();
 }
