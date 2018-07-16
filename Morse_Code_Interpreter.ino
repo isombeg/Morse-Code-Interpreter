@@ -1,5 +1,3 @@
-#include <Time.h>
-
 const int ELEC_INPUT_PIN = 7; //Digital pin 7 will be used to detect electrical input
 
 //Letters and corresponding morse code
@@ -66,22 +64,19 @@ bool dashDotDet(){ //Function determining whether input is a dash or a dot
 }
 
 bool chngCharDet(){ //Function determining whether or not the user will being inputting code for a different character
-  // Problem: To return false, button must be pressed for at least 2 seconds
-  if (digitalRead(ELEC_INPUT_PIN) == LOW){
-    int initTime = second() * 1000 + millis();
-    Serial.println(initTime);
-    while (digitalRead(ELEC_INPUT_PIN) == LOW){
+  if (digitalRead(ELEC_INPUT_PIN) == LOW){ //If button is unpressed
+    int initTime = millis(); //Time elapsed in millisecs since program started running
+    while (digitalRead(ELEC_INPUT_PIN) == LOW && millis() - initTime < 2000){ //while button remains unpressed and time elapsed since initializing initTime is less than 2000 ms
       
     }
-    int finalTime = second() * 1000 + millis();
-    
-//    delay(2000);
-//    if (digitalRead(ELEC_INPUT_PIN) == LOW){
-//      return true;
-//    }
-//    else{
-//      return false;
-//    }
+    int finalTime = millis();
+    if  ((finalTime - initTime) < 2000){
+      return false; //user not changing chars if time between initializing initTime and finalTime is lesser than 2000
+    }
+    else if (finalTime - initTime >= 2000){
+      return true; //user changing chars if time between initializing initTime and finalTime is greater than or equal to 2000
+    }
+
   }
   else{
     chngCharDet();
@@ -133,7 +128,6 @@ void setup() {
 }
 
 void loop() {
- int chngState = chngCharDet();
- Serial.println(chngState);
+ Serial.println(chngCharDet());
 
 }
