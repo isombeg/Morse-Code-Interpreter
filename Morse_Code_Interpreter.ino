@@ -84,40 +84,54 @@ bool chngCharDet(){ //Function determining whether or not the user will being in
 } //If the button remains unpressed for more than 2 seconds, the software established that the user will input Morse code for a new character
 
 bool linkDashDot(){ //Function that will link dashes and dots belonging to the Morse code for a certain character together
-  int dashDotList[ 4 ] = {2, 2, 2, 2};
-  Serial.println("dashDotList: {2, 2, 2, 2}");
+  int dashDotList[ 4 ] = {2, 2, 2, 2}; //Initialize list with 4 entries
   bool chngState = false; // Boolean var that will later be assigned store whether user intends to change characters or not
-  Serial.print("chngState: ");
-  Serial.println(chngState);
   int index = -1;
-  Serial.println("While loop initiated");
-  while (chngState == false && index < 3){
+
+  while (chngState == false && index < 3){ //while user doesn't intend to change char and index is lesser than 3
     if (digitalRead(ELEC_INPUT_PIN) == LOW){
       index += 1;
-      Serial.print("index: ");
-      Serial.println(index);
-      bool blip = dashDotDet();
-      Serial.print("blip: "); Serial.println(blip);
-      dashDotList[index] = blip;
+      bool blip = dashDotDet(); //bool stores whether entry is a dash or a dot
+      dashDotList[index] = blip; //bool is stored in dashDotList
       chngState = chngCharDet();
-      Serial.print("chngState: "); Serial.println(chngState);
     }
   }
-  Serial.println("While loop terminated");
-  Serial.println("Displaying dashDotList: ");
-  Serial.println(dashDotList[0]); Serial.println(dashDotList[1]); Serial.println(dashDotList[2]); Serial.println(dashDotList[3]);
-  Serial.println("Initiating counter");
   int counter = 0;
-  for (int i = 0; i = 3; i++){
+  
+  for (int i = 0; i < 4; i++){ 
     if (dashDotList[i] == 0 || dashDotList[i] == 1){
       counter += 1;
+      Serial.print("counter: ");
+      Serial.println(counter);
     }
   }
-  Serial.print("counter: "); Serial.println(counter);
-  return dashDotList;
+
+  int rsltList[ counter ];
+  for (int i = 0; i < counter; i++){
+    rsltList[i] = dashDotList[i];
+  }
+  
+  return rsltList, counter;
 }
 
+char charDet(int morseCode[ ], int arrSize){ //function to find character corresponding to morse code
+  Serial.println(morseCode[0]);
+  switch(arrSize){
+    case 1 :
+      Serial.println("Case 1 satisfied");
+      Serial.print("morseCode[0]: "); Serial.println(morseCode[0]);
+      for (int i = 0; i < 2; i++){
+        Serial.print("oneInpDigits[i][0]: "); Serial.println(oneInpDigits[i][0]);
+        if (morseCode[0] == oneInpDigits[i][0]){
+          return oneInpChar[i];
+        }
+      }
+      break;
 
+    case 2 :
+      Serial.println("Case 2 satisfied");
+  }
+}
 
 
 
@@ -128,6 +142,6 @@ void setup() {
 }
 
 void loop() {
- Serial.println(chngCharDet());
+ Serial.println(charDet({0},1));
 
 }
