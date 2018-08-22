@@ -1,69 +1,90 @@
 const int ELEC_INPUT_PIN = 7; //Digital pin 7 will be used to detect electrical input
 
+char *g = malloc(5);
+
 //Letters and corresponding morse code
-int A[ 2 ] = {0, 1};
-int B[ 4 ] = {1, 0, 0, 0};
-int C[ 4 ] = {1,0,1,0};
-int D[ 3 ] = {1,0,0};
-int E[ 1 ] = {0};
-int F[ 4 ] = {0,0,1,0};
-int G[ 3 ] = {1,1,0};
-int H[ 4 ] = {0,0,0,0};
-int I[ 2 ] = {0,0};
-int J[ 4 ] = {0,1,1,1};
-int K[ 3 ] = {1,0,1};
-int L[ 4 ] = {0,1,0,0};
-int M[ 2 ] = {1,1};
-int N[ 2 ] = {1,0};
-int O[ 3 ] = {1,1,1};
-int P[ 4 ] = {0,1,1,0};
-int Q[ 4 ] = {1,1,0,1};
-int R[ 3 ] = {0,1,0};
-int S[ 3 ] = {0,0,0};
-int T[ 1 ] = {1};
-int U[ 3 ] = {0,0,1};
-int V[ 4 ] = {0,0,0,1};
-int W[ 3 ] = {0,1,1};
-int X[ 4 ] = {1,0,0,1};
-int Y[ 4 ] = {1,0,1,1};
-int Z[ 4 ] = {1,1,0,0};
+#define morse_A "01"
+#define morse_B "1000"
+#define morse_C "1010"
+#define morse_D "100"
+#define morse_E "0"
+#define morse_F "0010"
+#define morse_G "110"
+#define morse_H "0000"
+#define morse_I "00"
+#define morse_J "0111"
+#define morse_K "101"
+#define morse_L "0100"
+#define morse_M "11"
+#define morse_N "10"
+#define morse_O "111"
+#define morse_P "0110"
+#define morse_Q "1101"
+#define morse_R "010"
+#define morse_S "000"
+#define morse_T "1"
+#define morse_U "001"
+#define morse_V "0001"
+#define morse_W "011"
+#define morse_X "1001"
+#define morse_Y "1011"
+#define morse_Z "1100"
 
 //Classification of different characters and Morse Code:
 
   // Lists of the alphabet:
-char oneInpChar[ 2 ] = {'E','T'};
-char twoInpChar[ 4 ] = {'A','I','M','N'};
-char thrInpChar_A[ 4 ] = {'D','G','K','O'};
-char thrInpChar_B[ 4 ] = {'R','S','U','W'};
-char fourInpChar_A[ 6 ] = {'B','C','Q','X','Y','Z'};
-char fourInpChar_B[ 6 ] = {'F','H','J','L','P','V'};
+char *oneInpChar = "ET";
+char *twoInpChar = "AIMN";
+char *thrInpChar_A = "DGKO";
+char *thrInpChar_B = "RSUW";
+char *fourInpChar_A = "BCQXYZ";
+char *fourInpChar_B = "FHJLPV";
   
   //Lists of lists containing the Morse code for each character above:
-int oneInpDigits[ 2 ][ 1 ] = {{E},{T}};
-int twoInpDigits[ 4 ][ 2 ] = {{A},{I},{M},{N}};
-int thrInpDigits_A[ 4 ][ 3 ] = {{D},{G},{K},{O}};
-int thrInpDigits_B[ 4 ][ 3 ] = {{R},{S},{U},{W}};
-int fourInpDigits_A[ 6 ][ 4 ] = {{B},{C},{Q},{X},{Y},{Z}};
-int fourInpDigits_B[ 6 ][ 4 ] = {{F},{H},{J},{L},{P},{V}};
+const char *oneInpDigits[ 2 ] = {morse_E, morse_T};
+const char *twoInpDigits[ 4 ] = {morse_A, morse_I,morse_M, morse_N};
+const char *thrInpDigits_A[ 4 ] = {morse_D, morse_G, morse_K, morse_O};
+const char *thrInpDigits_B[ 4 ] = {morse_R, morse_S, morse_U, morse_W};
+const char *fourInpDigits_A[ 6 ] = {morse_B, morse_C, morse_Q, morse_X, morse_Y, morse_Z};
+const char *fourInpDigits_B[ 6 ] = {morse_F, morse_H, morse_J, morse_L, morse_P, morse_V};
 
-bool dashDotDet(){ //Function determining whether input is a dash or a dot
-  bool powerState = digitalRead(ELEC_INPUT_PIN); //Store whether button is being pushed or not in bool variable
-  if (powerState == HIGH){ //In the event that button is being pushed, execute following procedure
-    delay(1000);
-    powerState = digitalRead(ELEC_INPUT_PIN); //If after a second the button is still down, register a dash
-    if (powerState == HIGH){
-      return true;
-    }
-    else if(powerState == LOW){ //If after a second the button isn't still down, register a dot
-      return false;
+int counter(char *code){
+  
+  int counter = 0;
+  
+  for (int i = 0; i < 4; i++){ //Loop counts how many 1s and 0s are in the loop
+    
+    if (code[i] == '0' || code[i] == '1'){
+      counter++;
     }
   }
-  else if(powerState == LOW){ //If the button was never pressed in the first place, recur
-    dashDotDet();
-  }
+  
+  return counter;
 }
 
-bool chngCharDet(){ //Function determining whether or not the user will being inputting code for a different character
+int dashDotDet(){ //Function determining whether input is a dash or a dot
+  int powerState = digitalRead(ELEC_INPUT_PIN); //Store whether button is being pushed or not in bool variable
+    
+    if (powerState == HIGH){ //In the event that button is being pushed, execute following procedure
+      
+      delay(1000);
+      powerState = digitalRead(ELEC_INPUT_PIN); //If after a second the button is still down, register a dash
+      
+      if (powerState == HIGH){
+        return 1;
+      }
+      
+      
+      else if(powerState == LOW){ //If after a second the button isn't still down, register a dot
+        return 0;
+      }
+    }
+    else if(powerState == LOW){ //If the button was never pressed in the first place, recur
+      dashDotDet();
+    }
+}
+
+int chngCharDet(){ //Function determining whether or not the user will being inputting code for a different character
   if (digitalRead(ELEC_INPUT_PIN) == LOW){ //If button is unpressed
     int initTime = millis(); //Time elapsed in millisecs since program started running
     while (digitalRead(ELEC_INPUT_PIN) == LOW && millis() - initTime < 2000){ //while button remains unpressed and time elapsed since initializing initTime is less than 2000 ms
@@ -71,10 +92,10 @@ bool chngCharDet(){ //Function determining whether or not the user will being in
     }
     int finalTime = millis();
     if  ((finalTime - initTime) < 2000){
-      return false; //user not changing chars if time between initializing initTime and finalTime is lesser than 2000
+      return 0; //user not changing chars if time between initializing initTime and finalTime is lesser than 2000
     }
     else if (finalTime - initTime >= 2000){
-      return true; //user changing chars if time between initializing initTime and finalTime is greater than or equal to 2000
+      return 1; //user changing chars if time between initializing initTime and finalTime is greater than or equal to 2000
     }
 
   }
@@ -83,53 +104,112 @@ bool chngCharDet(){ //Function determining whether or not the user will being in
   }
 } //If the button remains unpressed for more than 2 seconds, the software established that the user will input Morse code for a new character
 
-bool linkDashDot(){ //Function that will link dashes and dots belonging to the Morse code for a certain character together
-  int dashDotList[ 4 ] = {2, 2, 2, 2}; //Initialize list with 4 entries
-  bool chngState = false; // Boolean var that will later be assigned store whether user intends to change characters or not
+char *linkDashDot(){ //Function that will link dashes and dots belonging to the Morse code for a certain character together
+  
+  char dashDotStr[] = {NULL,NULL,NULL,NULL,'\0'}; //Initialize pointer with 4 chars
+  int chngState; // Boolean var that will later be assigned store whether user intends to change characters or not
   int index = -1;
 
-  while (chngState == false && index < 3){ //while user doesn't intend to change char and index is lesser than 3
+  Serial.println("Commencing recording of dash and dots\n");
+  
+  do{
     if (digitalRead(ELEC_INPUT_PIN) == LOW){
-      index += 1;
-      bool blip = dashDotDet(); //bool stores whether entry is a dash or a dot
-      dashDotList[index] = blip; //bool is stored in dashDotList
-      chngState = chngCharDet();
-    }
-  }
-  int counter = 0;
-  
-  for (int i = 0; i < 4; i++){ 
-    if (dashDotList[i] == 0 || dashDotList[i] == 1){
-      counter += 1;
-      Serial.print("counter: ");
-      Serial.println(counter);
-    }
-  }
+      
+      index++;
+      Serial.print("index: ");
+      Serial.println(index);
 
-  int rsltList[ counter ];
-  for (int i = 0; i < counter; i++){
-    rsltList[i] = dashDotList[i];
-  }
+      chngState = chngCharDet();
+      Serial.print("chngState: ");
+      Serial.println(chngState);
+
+      if (chngState == 0){
+      
+        int blip = dashDotDet(); //bool stores whether entry is a dash or a dot
+        Serial.print("blip: ");
+        Serial.println(blip);
+      
+        dashDotStr[index] = (char) (blip + 48); //bool is stored in dashDotList
+        Serial.print("dashDotStr: ");
+        Serial.println(dashDotStr);
+      
+      }
+      
+    }
+  } while (chngState == 0 && index < 3); //while user doesn't intend to change char and index is lesser than 3
+
+  Serial.println("Terminating the recording process\n");
   
-  return rsltList, counter;
+  return dashDotStr;
 }
 
-char charDet(int morseCode[ ], int arrSize){ //function to find character corresponding to morse code
-  Serial.println(morseCode[0]);
+char charDet(char *morseCode, int arrSize){ //function to find character corresponding to morse code
+  
+  int indexNum = -1;
   switch(arrSize){
+    
     case 1 :
-      Serial.println("Case 1 satisfied");
-      Serial.print("morseCode[0]: "); Serial.println(morseCode[0]);
-      for (int i = 0; i < 2; i++){
-        Serial.print("oneInpDigits[i][0]: "); Serial.println(oneInpDigits[i][0]);
-        if (morseCode[0] == oneInpDigits[i][0]){
-          return oneInpChar[i];
-        }
+      
+      while (morseCode != oneInpDigits[indexNum] && indexNum <= 1){
+        indexNum++;
       }
+
+      return oneInpChar[indexNum];
       break;
 
     case 2 :
-      Serial.println("Case 2 satisfied");
+      //Serial.println("Case 2 satisfied");
+
+      while (morseCode != twoInpDigits[indexNum] && indexNum <= 4){
+        indexNum++;
+      }
+
+      //Serial.print("indexNum: ");
+      //Serial.println(indexNum);
+      return twoInpChar[indexNum];
+      break;
+
+    case 3 :
+      //Serial.println("Case 3 satisfied");
+
+      if (morseCode[0] == '1'){ //Procedure If morse code begins with 1
+        while (morseCode != thrInpDigits_A[indexNum] && indexNum <= 4){
+          indexNum++;
+        }
+        
+        return thrInpChar_A[indexNum]; 
+      }
+
+      else if (morseCode[0] == '0'){ //Procedure if morse code begins with 0
+        while (morseCode != thrInpDigits_B[indexNum] && indexNum <= 4){
+          indexNum++;
+        }
+        
+        return thrInpChar_B[indexNum]; 
+      }
+      
+      break;
+
+    case 4 :
+      //Serial.println("Case 4 satisfied");
+
+      if (morseCode[0] == '1'){ //Procedure If morse code begins with 1
+        while (morseCode != fourInpDigits_A[indexNum] && indexNum <= 6){
+          indexNum++;
+        }
+        
+        return fourInpChar_A[indexNum]; 
+      }
+
+      else if (morseCode[0] == '0'){ //Procedure if morse code begins with 0
+        while (morseCode != fourInpDigits_B[indexNum] && indexNum <= 6){
+          indexNum++;
+        }
+        
+        return fourInpChar_B[indexNum]; 
+      }
+      
+      break;
   }
 }
 
@@ -138,10 +218,12 @@ char charDet(int morseCode[ ], int arrSize){ //function to find character corres
 void setup() {
   Serial.begin(9600);
   pinMode(ELEC_INPUT_PIN, INPUT);
+  Serial.println("Commencing recording process. Please begin inputting.\n");
   
 }
 
 void loop() {
- Serial.println(charDet({0},1));
+  
+  Serial.println(linkDashDot());
 
 }
