@@ -1,6 +1,8 @@
+#include <stdlib.h>
+
 const int ELEC_INPUT_PIN = 7; //Digital pin 7 will be used to detect electrical input
 
-char *g = malloc(5);
+char *morseStr = "    ";
 
 //Letters and corresponding morse code
 #define morse_A "01"
@@ -107,38 +109,42 @@ int chngCharDet(){ //Function determining whether or not the user will being inp
 char *linkDashDot(){ //Function that will link dashes and dots belonging to the Morse code for a certain character together
   
   char dashDotStr[] = {NULL,NULL,NULL,NULL,'\0'}; //Initialize pointer with 4 chars
-  int chngState; // Boolean var that will later be assigned store whether user intends to change characters or not
+  int chngState;
   int index = -1;
 
-  Serial.println("Commencing recording of dash and dots\n");
+  //Serial.println("Commencing recording of dash and dots\n");
   
   do{
     if (digitalRead(ELEC_INPUT_PIN) == LOW){
       
       index++;
-      Serial.print("index: ");
-      Serial.println(index);
+      
+      // Serial.print("index: ");
+      // Serial.println(index);
 
-      chngState = chngCharDet();
-      Serial.print("chngState: ");
-      Serial.println(chngState);
-
-      if (chngState == 0){
-      
-        int blip = dashDotDet(); //bool stores whether entry is a dash or a dot
-        Serial.print("blip: ");
-        Serial.println(blip);
-      
-        dashDotStr[index] = (char) (blip + 48); //bool is stored in dashDotList
-        Serial.print("dashDotStr: ");
-        Serial.println(dashDotStr);
-      
+      if (chngCharDet() == 0){
+        
+        // Serial.println("Recording conditions cleared");
+        
+        dashDotStr[index] = (char) (dashDotDet() + 48);
+        chngState = 0;
+        
+        // Serial.print("dashDotStr: ");
+        // Serial.println(dashDotStr);
+        // Serial.println("\n");
       }
-      
+
+      else{
+        //Serial.println("Recording conditions not cleared");
+        
+        chngState = 1;
+      }
+
     }
+    
   } while (chngState == 0 && index < 3); //while user doesn't intend to change char and index is lesser than 3
 
-  Serial.println("Terminating the recording process\n");
+  // Serial.println("Terminating the recording process\n");
   
   return dashDotStr;
 }
@@ -223,7 +229,8 @@ void setup() {
 }
 
 void loop() {
-  
-  Serial.println(linkDashDot());
-
+  morseStr = linkDashDot();
+  Serial.print(charDet(morseStr, counter(morseStr)));
+  Serial.print('-');
+  *morseStr = "    ";
 }
